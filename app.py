@@ -1,4 +1,5 @@
 import os
+import requests
 
 from flask import (Flask, redirect, render_template, request,
                    send_from_directory, url_for)
@@ -27,6 +28,17 @@ def hello():
        print('Request for hello page received with no name or blank name -- redirecting')
        return redirect(url_for('index'))
 
+@app.route('/health', methods=['GET'])
+def health():
+    url = 'https://healthtesting.azurewebsites.net/'
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        
+        return 'Status: {}, Body: {}'.format(response.status_code, response.text)
+    
+    except requests.exceptions.RequestException as e:
+        return str(e)
 
 if __name__ == '__main__':
    app.run()
